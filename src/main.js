@@ -1,6 +1,7 @@
 import { createApp, defineAsyncComponent } from 'vue'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
+import App from './App.vue'
 import './index.css'
 
 // Route-level code splitting with dynamic imports
@@ -20,7 +21,7 @@ const router = createRouter({
   }
 })
 
-const app = createApp({})
+const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.mount('#app')

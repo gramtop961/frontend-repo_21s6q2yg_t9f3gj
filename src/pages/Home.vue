@@ -1,47 +1,65 @@
 <template>
   <div>
-    <!-- Preloader -->
-    <transition name="fade">
-      <div v-if="loading" class="fixed inset-0 z-50 grid place-items-center bg-slate-950">
-        <div class="flex flex-col items-center gap-4">
-          <img src="/logo.svg" alt="HMC" class="w-20 h-20 animate-pulse" />
-          <p class="text-slate-300">Yüklənir...</p>
-        </div>
-      </div>
-    </transition>
-
-    <!-- Scroll progress bar -->
-    <div class="fixed top-0 left-0 right-0 h-1.5 z-40">
-      <div class="h-full bg-gradient-to-r from-blue-500 via-fuchsia-500 to-cyan-400" :style="{ width: progress + '%' }"></div>
-    </div>
-
     <!-- Navbar -->
     <Navbar :scrolled="scrolled" @open-auth="openAuth" />
 
-    <!-- Hero (Spline 3D) -->
-    <section ref="heroRef" class="relative min-h-[90vh] overflow-hidden">
+    <!-- Hero -->
+    <section ref="heroRef" class="relative">
       <Hero />
-      <div class="absolute inset-0 pointer-events-none bg-gradient-to-b from-slate-950/10 to-slate-950/80"></div>
-      <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-slate-300/70 animate-bounce">Scroll</div>
     </section>
 
-    <!-- Lazy loaded sections -->
-    <LazySection :once="false"><Services /></LazySection>
-    <LazySection><Solutions /></LazySection>
-    <LazySection><Team /></LazySection>
-    <LazySection><Pricing /></LazySection>
-    <LazySection><About /></LazySection>
-    <LazySection><Contact /></LazySection>
+    <!-- Core sections (simple) -->
+    <section id="services" class="py-16">
+      <div class="max-w-7xl mx-auto px-6">
+        <h2 class="text-3xl font-bold mb-6">Xidmətlər</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          <ServiceCard v-for="s in services" :key="s.title" :service="s" />
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="py-16 bg-white/5">
+      <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+        <div>
+          <h2 class="text-3xl font-bold">Haqqımızda</h2>
+          <p class="text-white/70 mt-3">HMC Company — müəssisələr üçün etibarlı IT partnyoru. Bulud və təhlükəsizlikdən şəbəkə və helpdesk-ə qədər.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <Stat k="99.9%" v="Uptime" />
+          <Stat k="24/7" v="Support" />
+          <Stat k="100+" v="Layihə" />
+          <Stat k="500+" v="Müştəri" />
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="py-16">
+      <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10">
+        <div>
+          <h2 class="text-3xl font-bold mb-2">Əlaqə</h2>
+          <p class="text-white/70">Suallarınızı göndərin, tez geri dönək.</p>
+          <div class="mt-6 aspect-video w-full rounded-xl overflow-hidden">
+            <iframe class="w-full h-full" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3038.727423258036!2d49.851!3d40.409!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDI0JzMyLjQiTiA0OcKwNTEnMDMuNiJF!5e0!3m2!1sen!2saz!4v1685555555"></iframe>
+          </div>
+        </div>
+        <form @submit.prevent="submit" class="glass rounded-2xl p-6 grid gap-4">
+          <div class="grid md:grid-cols-2 gap-4">
+            <input v-model="form.name" required placeholder="Ad Soyad" class="px-4 py-3 rounded-lg bg-white/5 border border-white/10" />
+            <input v-model="form.email" type="email" required placeholder="Email" class="px-4 py-3 rounded-lg bg-white/5 border border-white/10" />
+          </div>
+          <input v-model="form.phone" placeholder="Telefon" class="px-4 py-3 rounded-lg bg-white/5 border border-white/10" />
+          <textarea v-model="form.message" required placeholder="Mesaj" rows="5" class="px-4 py-3 rounded-lg bg-white/5 border border-white/10"></textarea>
+          <button :disabled="loading" class="px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-60">
+            <span v-if="!loading">Göndər</span>
+            <span v-else class="animate-pulse">Göndərilir...</span>
+          </button>
+          <p v-if="done" class="text-green-400">Mesajınız qəbul edildi.</p>
+        </form>
+      </div>
+    </section>
 
     <!-- Footer -->
     <Footer />
-
-    <!-- Modals -->
-    <AuthModal v-if="authOpen" @close="authOpen = false" />
-    <CookieBar />
-
-    <!-- Floating actions -->
-    <FloatingButtons />
   </div>
 </template>
 
@@ -49,35 +67,37 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import Navbar from '@/ui/Navbar.vue'
 import Hero from '@/ui/Hero.vue'
-import Services from '@/ui/Services.vue'
-import Solutions from '@/ui/Solutions.vue'
-import Team from '@/ui/Team.vue'
-import Pricing from '@/ui/Pricing.vue'
-import About from '@/ui/About.vue'
-import Contact from '@/ui/Contact.vue'
 import Footer from '@/ui/Footer.vue'
-import CookieBar from '@/ui/CookieBar.vue'
-import AuthModal from '@/ui/AuthModal.vue'
-import FloatingButtons from '@/ui/FloatingButtons.vue'
-import LazySection from '@/utils/LazySection.vue'
+import ServiceCard from '@/ui/parts/ServiceCard.vue'
+import Stat from '@/ui/parts/Stat.vue'
 
-const loading = ref(true)
-const progress = ref(0)
 const scrolled = ref(false)
-const authOpen = ref(false)
 const heroRef = ref(null)
 
-const openAuth = () => (authOpen.value = true)
+const services = [
+  { icon: '☁️', title: 'Cloud Server', desc: 'Miqyaslana bilən bulud serverləri' },
+  { icon: '📧', title: 'Corporate Email', desc: 'Təhlükəsiz korporativ email' },
+  { icon: '📞', title: 'IP Telephony (3CX)', desc: 'IVR və Call Center' },
+  { icon: '🗂️', title: 'Active Directory', desc: 'Mərkəzləşdirilmiş identifikasiya' },
+  { icon: '🌐', title: 'Web Hosting', desc: 'Yüksək performanslı hosting' },
+  { icon: '🧑‍💻', title: 'IT Outsourcing', desc: 'Tam və ya qismən IT idarəetmə' }
+]
 
-const onScroll = () => {
-  const st = window.scrollY
-  const dh = document.body.scrollHeight - window.innerHeight
-  progress.value = Math.min(100, (st / dh) * 100)
-  scrolled.value = st > 10
+const form = ref({ name: '', email: '', phone: '', message: '' })
+const loading = ref(false)
+const done = ref(false)
+
+async function submit(){
+  loading.value = true
+  await new Promise(r=>setTimeout(r,600))
+  done.value = true
+  form.value = { name: '', email: '', phone: '', message: '' }
+  loading.value = false
 }
 
+const onScroll = () => { scrolled.value = window.scrollY > 10 }
+
 onMounted(() => {
-  setTimeout(() => (loading.value = false), 800)
   window.addEventListener('scroll', onScroll, { passive: true })
 })
 
@@ -85,8 +105,3 @@ onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
 })
 </script>
-
-<style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity .3s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
-</style>
