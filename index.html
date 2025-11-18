@@ -1,18 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="az">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flames App</title>
-    <link rel="icon" type="image/x-icon" href="favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-mono/style.css">
+    <title>HMC Company — Cloud, Email, IP Telephony, Hosting, AD, Outsourcing</title>
+    <meta name="description" content="HMC Company: Cloud serverlər, korporativ email, IP telefoniya (3CX), web hosting, Active Directory, IT outsourcing həlləri. Yüksək performanslı, təhlükəsiz və miqyaslana bilən infrastrukturlar." />
+
+    <!-- OpenGraph -->
+    <meta property="og:title" content="HMC Company — Enterprise IT Solutions" />
+    <meta property="og:description" content="Cloud, Security, Monitoring, Backup və daha çoxu üçün korporativ həllər" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/og-image.png" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "HMC Company",
+      "url": "/",
+      "logo": "/logo.svg",
+      "sameAs": [
+        "https://www.facebook.com/",
+        "https://www.linkedin.com/",
+        "https://www.instagram.com/"
+      ],
+      "contactPoint": [{
+        "@type": "ContactPoint",
+        "telephone": "+994 50 000 00 00",
+        "contactType": "customer service",
+        "areaServed": "AZ",
+        "availableLanguage": ["Azerbaijani", "English", "Russian"]
+      }]
+    }
+    </script>
+
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+  <body class="bg-slate-950 text-white">
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
